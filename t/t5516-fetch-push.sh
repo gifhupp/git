@@ -1770,4 +1770,14 @@ test_expect_success 'denyCurrentBranch and worktrees' '
 	git -C cloned push origin HEAD:new-wt &&
 	test_must_fail git -C cloned push --delete origin new-wt
 '
+
+test_expect_success 'refuse fetch to current branch of worktree' '
+	test_commit -C cloned second &&
+	test_must_fail git fetch cloned HEAD:new-wt &&
+	git clone --bare . bare.git &&
+	git -C bare.git worktree add bare-wt &&
+	test_must_fail git -C bare.git fetch ../cloned HEAD:bare-wt &&
+	git fetch -u cloned HEAD:new-wt &&
+	git -C bare.git fetch -u ../cloned HEAD:bare-wt
+'
 test_done
